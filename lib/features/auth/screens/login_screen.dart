@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reddit_clone/core/common/loader.dart';
 import 'package:reddit_clone/core/common/sign_in_button.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
+import 'package:reddit_clone/features/auth/controller/auth_controller.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(authControllerProvider);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -49,7 +51,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const SignInButton(),
+          isLoading ? const Loader() : const SignInButton(),
         ]),
       ),
     );
