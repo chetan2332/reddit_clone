@@ -3,26 +3,44 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:reddit_clone/core/common/error_text.dart';
 import 'package:reddit_clone/core/common/loader.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
 import 'package:reddit_clone/core/utils.dart';
-import 'package:reddit_clone/features/community/controller/community_controller.dart';
-import 'package:reddit_clone/models/community_model.dart';
+import 'package:reddit_clone/features/auth/controller/auth_controller.dart';
+import 'package:reddit_clone/features/user_profile/controller/user_profile_controller.dart';
 import 'package:reddit_clone/theme/pallete.dart';
 
-class EditCommunityScreen extends ConsumerStatefulWidget {
-  final String name;
-  const EditCommunityScreen({required this.name, super.key});
+class EditProfileScreen extends ConsumerStatefulWidget {
+  const EditProfileScreen({
+    super.key,
+    required this.uid,
+  });
+
+  final String uid;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _EditCommunityScreenState();
+      _EditProfileScreenState();
 }
 
-class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   File? bannerFile;
   File? profileFile;
+  late TextEditingController name;
+
+  @override
+  void initState() {
+    name = TextEditingController(text: ref.read(userProvider)!.name);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    name.dispose();
+    super.dispose();
+  }
 
   void selectBannerImage() async {
     final res = await pickImage();
@@ -38,27 +56,27 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
     }
   }
 
-  void save(Community community) {
-    ref.read(communityControllerProvider.notifier).editCommunity(
+  void save() {
+    ref.read(userProfileControllerProvider.notifier).editCommunity(
+          name: name.text.trim(),
           context: context,
-          community: community,
-          bannerFile: bannerFile,
           profileFile: profileFile,
+          bannerFile: bannerFile,
         );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(userProfileControllerProvider);
     final currentTheme = ref.watch(themeNotifierProvider);
-    final isLoading = ref.watch(communityControllerProvider);
-    return ref.watch(getCommunityBynameProvider(widget.name)).when(
-          data: (community) => Scaffold(
+    return ref.watch(getUserDataProvider(widget.uid)).when(
+          data: (user) => Scaffold(
             backgroundColor: currentTheme.backgroundColor,
             appBar: AppBar(
-              title: const Text('Edit Community'),
+              title: const Text('Edit Profile'),
               actions: [
                 TextButton(
-                  onPressed: () => save(community),
+                  onPressed: save,
                   child: const Text('Save'),
                 )
               ],
@@ -90,14 +108,14 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                                             BorderRadius.circular(10)),
                                     child: bannerFile != null
                                         ? Image.file(bannerFile!)
-                                        : community.banner.isEmpty ||
-                                                community.banner ==
+                                        : user.banner.isEmpty ||
+                                                user.banner ==
                                                     Constants.bannerDefault
                                             ? const Icon(
                                                 Icons.camera_alt_outlined,
                                                 size: 40,
                                               )
-                                            : Image.network(community.banner),
+                                            : Image.network(user.banner),
                                   ),
                                 ),
                               ),
@@ -110,13 +128,25 @@ class _EditCommunityScreenState extends ConsumerState<EditCommunityScreen> {
                                     backgroundImage: profileFile != null
                                         ? FileImage(profileFile!)
                                             as ImageProvider
-                                        : NetworkImage(community.avatar),
+                                        : NetworkImage(user.profilePic),
                                     radius: 32,
                                   ),
                                 ),
                               )
                             ],
                           ),
+                        ),
+                      ),
+                      TextField(
+                        controller: name,
+                        decoration: InputDecoration(
+                          filled: true,
+                          hintText: 'Name',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.blue),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          border: InputBorder.none,
                         ),
                       )
                     ],

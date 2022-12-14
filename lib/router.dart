@@ -3,11 +3,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:reddit_clone/features/auth/screens/login_screen.dart';
+import 'package:reddit_clone/features/community/screens/add_mods_screen.dart';
 import 'package:reddit_clone/features/community/screens/community_screen.dart';
 import 'package:reddit_clone/features/community/screens/create_community_screen.dart';
 import 'package:reddit_clone/features/community/screens/edit_community_screen.dart';
 import 'package:reddit_clone/features/community/screens/mod_tools_scren.dart';
 import 'package:reddit_clone/features/home/screens/home_screen.dart';
+import 'package:reddit_clone/features/user_profile/screens/edit_profile_screen.dart';
+import 'package:reddit_clone/features/user_profile/screens/user_profile_screen.dart';
 import 'package:routemaster/routemaster.dart';
 
 final loggedOutRoute = RouteMap(routes: {
@@ -31,6 +34,21 @@ final loggedinRoute = RouteMap(routes: {
   '/:name/mod-tools/edit-community': (route) => MaterialPage(
         child: EditCommunityScreen(
           name: route.pathParameters['name']!,
+        ),
+      ),
+  '/:name/mod-tools/add-mods': (route) => MaterialPage(
+        child: AddModsScreen(
+          name: route.pathParameters['name']!,
+        ),
+      ),
+  '/u/:uid': (route) => MaterialPage(
+        child: UserProfileScreen(
+          uid: route.pathParameters['uid']!,
+        ),
+      ),
+  '/u/:uid/edit-profile': (route) => MaterialPage(
+        child: EditProfileScreen(
+          uid: route.pathParameters['uid']!,
         ),
       ),
 });
