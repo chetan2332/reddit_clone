@@ -49,7 +49,7 @@ class ProfileDrawer extends ConsumerWidget {
             onTap: () => signOut(ref),
           ),
           Switch.adaptive(
-            value: theme == Pallete.darkModeAppTheme,
+            value: theme != Pallete.darkModeAppTheme,
             onChanged: (value) {
               toogleTheme(ref);
             },
