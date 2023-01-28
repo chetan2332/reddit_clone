@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 class Post {
@@ -11,6 +13,7 @@ class Post {
   final List<String> downvotes;
   final int commentCount;
   final String username;
+  final String uid;
   final String type;
   final DateTime createdAt;
   final List<String> awards;
@@ -25,6 +28,7 @@ class Post {
     required this.downvotes,
     required this.commentCount,
     required this.username,
+    required this.uid,
     required this.type,
     required this.createdAt,
     required this.awards,
@@ -41,6 +45,7 @@ class Post {
     List<String>? downvotes,
     int? commentCount,
     String? username,
+    String? uid,
     String? type,
     DateTime? createdAt,
     List<String>? awards,
@@ -56,6 +61,7 @@ class Post {
       downvotes: downvotes ?? this.downvotes,
       commentCount: commentCount ?? this.commentCount,
       username: username ?? this.username,
+      uid: uid ?? this.uid,
       type: type ?? this.type,
       createdAt: createdAt ?? this.createdAt,
       awards: awards ?? this.awards,
@@ -74,6 +80,7 @@ class Post {
       'downvotes': downvotes,
       'commentCount': commentCount,
       'username': username,
+      'uid': uid,
       'type': type,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'awards': awards,
@@ -92,15 +99,20 @@ class Post {
       downvotes: List<String>.from(map['downvotes']),
       commentCount: map['commentCount']?.toInt() ?? 0,
       username: map['username'] ?? '',
+      uid: map['uid'] ?? '',
       type: map['type'] ?? '',
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
       awards: List<String>.from(map['awards']),
     );
   }
 
+  String toJson() => json.encode(toMap());
+
+  factory Post.fromJson(String source) => Post.fromMap(json.decode(source));
+
   @override
   String toString() {
-    return 'Post(id: $id, title: $title, link: $link, description: $description, communityName: $communityName, communityProfilePic: $communityProfilePic, upvotes: $upvotes, downvotes: $downvotes, commentCount: $commentCount, username: $username, type: $type, createdAt: $createdAt, awards: $awards)';
+    return 'Post(id: $id, title: $title, link: $link, description: $description, communityName: $communityName, communityProfilePic: $communityProfilePic, upvotes: $upvotes, downvotes: $downvotes, commentCount: $commentCount, username: $username, uid: $uid, type: $type, createdAt: $createdAt, awards: $awards)';
   }
 
   @override
@@ -118,6 +130,7 @@ class Post {
         listEquals(other.downvotes, downvotes) &&
         other.commentCount == commentCount &&
         other.username == username &&
+        other.uid == uid &&
         other.type == type &&
         other.createdAt == createdAt &&
         listEquals(other.awards, awards);
@@ -135,6 +148,7 @@ class Post {
         downvotes.hashCode ^
         commentCount.hashCode ^
         username.hashCode ^
+        uid.hashCode ^
         type.hashCode ^
         createdAt.hashCode ^
         awards.hashCode;

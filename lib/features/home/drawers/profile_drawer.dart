@@ -22,7 +22,6 @@ class ProfileDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider)!;
-    final theme = ref.watch(themeNotifierProvider);
     return Drawer(
       child: SafeArea(
           child: Column(
@@ -49,7 +48,8 @@ class ProfileDrawer extends ConsumerWidget {
             onTap: () => signOut(ref),
           ),
           Switch.adaptive(
-            value: theme != Pallete.darkModeAppTheme,
+            value: ref.watch(themeNotifierProvider.notifier).mode ==
+                ThemeMode.dark,
             onChanged: (value) {
               toogleTheme(ref);
             },

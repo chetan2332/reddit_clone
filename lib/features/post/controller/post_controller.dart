@@ -21,6 +21,12 @@ final postControllerProvider = StateNotifierProvider<PostController, bool>(
   },
 );
 
+final userPostsProvider =
+    StreamProvider.family((ref, List<Community> communities) {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.fetchUserPost(communities);
+});
+
 class PostController extends StateNotifier<bool> {
   final PostRepository _postRepository;
   final Ref _ref;
@@ -52,6 +58,7 @@ class PostController extends StateNotifier<bool> {
       commentCount: 0,
       username: user!.name,
       type: 'text',
+      uid: user.uid,
       createdAt: DateTime.now(),
       awards: [],
       description: description,
@@ -86,6 +93,7 @@ class PostController extends StateNotifier<bool> {
       commentCount: 0,
       username: user!.name,
       type: 'link',
+      uid: user.uid,
       createdAt: DateTime.now(),
       awards: [],
       link: link,
@@ -113,7 +121,7 @@ class PostController extends StateNotifier<bool> {
     final imageRes = await _storageRepository.storeFile(
         path: 'posts/${selectedCommunity.name}', id: postId, file: file);
     imageRes.fold(
-      (l) => showSnackBar(l.toString(), context),
+      (l) => showSnackBar('image uploading... ${l.toString()}', context),
       (r) async {
         final Post post = Post(
           id: postId,
@@ -124,6 +132,7 @@ class PostController extends StateNotifier<bool> {
           downvotes: [],
           commentCount: 0,
           username: user!.name,
+          uid: user.uid,
           type: 'image',
           createdAt: DateTime.now(),
           awards: [],
@@ -133,7 +142,7 @@ class PostController extends StateNotifier<bool> {
         final res = await _postRepository.addPost(post);
         state = false;
         res.fold(
-          (l) => showSnackBar(l.message, context),
+          (l) => showSnackBar('after image upload ${l.message}', context),
           (r) {
             showSnackBar('Posted sucessfully', context);
             Routemaster.of(context).pop();
@@ -141,5 +150,13 @@ class PostController extends StateNotifier<bool> {
         );
       },
     );
+  }
+
+  Stream<List<Post>> fetchUserPost(List<Community> communities) {
+    if (communities.isNotEmpty) {
+      return _postRepository.fetchUserPosts(communities);
+    } else {
+      return Stream.value([]);
+    }
   }
 }

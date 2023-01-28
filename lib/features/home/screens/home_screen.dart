@@ -60,6 +60,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onPressed: () => displayEndDrawer(context),
               icon: CircleAvatar(
                 backgroundImage: NetworkImage(user?.profilePic ?? ''),
+                radius: 20,
               ),
             );
           })
@@ -70,6 +71,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       endDrawer: const ProfileDrawer(),
       bottomNavigationBar: CupertinoTabBar(
         activeColor: currentTheme.iconTheme.color,
+        backgroundColor: currentTheme.backgroundColor,
         items: const [
           BottomNavigationBarItem(
               icon: Padding(
